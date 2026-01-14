@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, addDays, isSunday, isSameDay, isAfter, startOfToday } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { CheckCircle, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Mock booked slots
 const bookedSlots = [
@@ -37,6 +39,7 @@ const BookingForm = () => {
     email: '',
     message: ''
   });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -65,7 +68,7 @@ const BookingForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedDate || !selectedTime || !formData.name || !formData.email) return;
+    if (!selectedDate || !selectedTime || !formData.name || !formData.email || !agreedToTerms) return;
     
     setIsSubmitting(true);
     // Simulate API call
@@ -79,6 +82,7 @@ const BookingForm = () => {
     setSelectedDate(undefined);
     setSelectedTime(null);
     setFormData({ name: '', email: '', message: '' });
+    setAgreedToTerms(false);
   };
 
   return (
@@ -248,12 +252,29 @@ const BookingForm = () => {
                       </div>
                     </div>
 
+                    {/* Terms checkbox */}
+                    <div className="flex items-start gap-3 mt-6 p-4 bg-secondary/30 rounded-xl">
+                      <Checkbox
+                        id="terms"
+                        checked={agreedToTerms}
+                        onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                        className="mt-0.5"
+                      />
+                      <label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                        I agree to the{' '}
+                        <Link to="/terms" className="text-accent hover:underline font-medium" target="_blank">
+                          Terms & Conditions
+                        </Link>
+                        {' '}and understand this is a demo website for educational purposes only.
+                      </label>
+                    </div>
+
                     <motion.button
                       type="submit"
-                      disabled={!selectedDate || !selectedTime || !formData.name || !formData.email || isSubmitting}
+                      disabled={!selectedDate || !selectedTime || !formData.name || !formData.email || !agreedToTerms || isSubmitting}
                       className={cn(
-                        "btn-primary w-full mt-8 flex items-center justify-center gap-2",
-                        (!selectedDate || !selectedTime || !formData.name || !formData.email) && "opacity-50 cursor-not-allowed"
+                        "btn-primary w-full mt-6 flex items-center justify-center gap-2",
+                        (!selectedDate || !selectedTime || !formData.name || !formData.email || !agreedToTerms) && "opacity-50 cursor-not-allowed"
                       )}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
