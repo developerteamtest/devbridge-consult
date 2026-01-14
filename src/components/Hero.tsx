@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import heroImage from '@/assets/hero-illustration.png';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Hero = () => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <section className="min-h-screen flex items-center pt-20 pb-16">
       <div className="container mx-auto">
@@ -43,10 +47,27 @@ const Hero = () => {
           >
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-primary/5 rounded-3xl blur-3xl" />
+              
+              {/* Skeleton loader */}
+              {!imageLoaded && (
+                <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden">
+                  <Skeleton className="absolute inset-0 w-full h-full" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
+                      <span className="text-sm text-muted-foreground">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <img
                 src={heroImage}
                 alt="Abstract tech illustration"
-                className="relative w-full rounded-3xl shadow-card"
+                className={`relative w-full rounded-3xl shadow-card transition-opacity duration-500 ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0 absolute'
+                }`}
+                onLoad={() => setImageLoaded(true)}
               />
             </div>
           </motion.div>
